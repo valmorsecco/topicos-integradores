@@ -1,0 +1,27 @@
+{
+  "name": "topicos-integradores",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/valmorsecco/topicos-integradores.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/valmorsecco/topicos-integradores/issues"
+  },
+  "homepage": "https://github.com/valmorsecco/topicos-integradores#readme",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "csv-parser": "^2.3.0",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security"
+  }
+}
