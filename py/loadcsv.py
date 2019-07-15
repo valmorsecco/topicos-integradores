@@ -2,6 +2,7 @@ import sys
 import pandas as pd
 import numpy as np
 from numpy import linalg as LA
+import statistics
 
 #Número de termos
 numterm = int(sys.argv[1])
@@ -55,31 +56,65 @@ for item in arrcmaux:
 
 #Coeficiente dos escores fatoriais
 matcart = np.transpose(matcar)
-matcartne = np.matmul(matcart, matcar) ** -1
+matcartne = LA.inv(np.matmul(matcart, matcar))
 coefef = np.matmul(matcartne, matcart)
 
 #Escores fatoriais
 z = np.array(df)
 medias = []
-dp = np.std(np.array(df), axis=0)
+dp = []
 idx = 0
 while idx < len(np.array(df)[0]):
     medias.append(0)
+    dp.append([])
     idxy = 0
     for item in np.array(df):
         medias[idx] = medias[idx] + item[idx]
+        dp[idx].append(item[idx])
         idxy = idxy + 1
     medias[idx] = medias[idx] / idxy
     idx = idx + 1
 
+idxdp = 0
+for item in dp:
+    dp[idxdp] = statistics.stdev(item)
+    idxdp = idxdp + 1
+
 idx2 = 0
+zaux = np.array(z, dtype=np.float64)
 while idx2 < len(z[0]):
+    idx3 = 0
     for item in z:
-        item[idx2] = (item[idx2] - medias[idx2]) / dp[idx2]
+        auxz = z[idx3][idx2]
+        auxm = medias[idx2]
+        auxd = dp[idx2]
+        zaux[idx3][idx2] = ((auxz - auxm) / auxd)
+        idx3 = idx3 + 1
     idx2 = idx2 + 1
 
+z = zaux
 zt = np.transpose(z)
 czt = np.transpose(np.matmul(coefef, zt))
+
+somaAux = []
+somaAuxMostra = []
+
+idxf = 0
+for item in czt:
+    idxi = 0
+    idxij = 0
+    somaAux.append(0)
+    while idxi < len(item):
+        idxij = idxij + autval[idxi]
+        somaAux[idxf] = somaAux[idxf] + (item[idxi] * autval[idxi])
+        idxi = idxi + 1
+    somaAux[idxf] = somaAux[idxf] / autval.sum()
+    somaAuxMostra.append([(idxf + 1), somaAux[idxf]])
+    idxf = idxf + 1
+
+somaAux = np.array(somaAux)
+somaAuxMostra = np.array(somaAuxMostra)
+somaAuxMostra = somaAuxMostra[somaAuxMostra[:,1].argsort(kind='mergesort')]
 
 #Iniciando console
 print('\n')
@@ -162,4 +197,10 @@ print(zt)
 print('\n')
 print('(Z Transposto * coefef) transposto')
 print(czt)
+print('\n')
+print('Escore final ponderado')
+print(somaAuxMostra)
+print('Escore final ordenado')
+for item in reversed(somaAuxMostra):
+    print(item)
 print('\n')
