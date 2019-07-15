@@ -1,36 +1,13 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+
 const app = express();
-const csv = require('csv-parser');
-const fs = require('fs');
-const { spawn } = require('child_process');
 
-const org = [];
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
 
-const loadValues = () => {
-  executePy('./py/corrcoef.py');
-  // fs.createReadStream('./csv/data.csv')
-  //   .pipe(csv())
-  //   .on('data', (row) => {
-  //     let values = Object.values(row);
-  //     for(var i = 0; i < values.length; i++) {
-  //       values[i] = parseFloat(values[i]);
-  //     }
-  //     org.push(values);
-  //   })
-  //   .on('end', () => {
-  //     executePy('./py/corrcoef.py', JSON.stringify(org));
-  //   });
-};
-
-const executePy = (file) => {
-  const pyProg = spawn('python', [file]);
-  pyProg.stdout.on('data', function(data) {
-    console.log(data.toString());
-  });
-}
-
-loadValues();
+require('./src/controllers/pyController.js')(app);
 
 app.listen(3000, () => {
-  console.log('Listen localhost:3000')
+  console.log('APP: localhost:3000');
 });
