@@ -19,7 +19,7 @@ autvet = np.transpose(autvet)
 autvalsort = np.sort(autval)[::-1]
 autovalsortr = np.zeros((numterm, numterm))
 autvetsort = []
-autvalsize = autval.size
+autvalsize = len(autval)
 
 #Variância explicada
 varexp = 0
@@ -30,21 +30,56 @@ while numtermld < numterm:
     numtermld = numtermld + 1
 
 varexp = varexp / autvalsize
-autvetsort = np.array(autvetsort)
+autvetsort = np.transpose(np.array(autvetsort))
 
 #Matriz de carregamentos (pesos)
-matcar = np.matmul(autovalsortr, autvetsort)
+matcar = np.matmul(autvetsort, autovalsortr)
 
 #Comunalidades e variâncias
+arrcmaux = []
 i = 0
 while i < len(matcar):
     j = 0
-    while j < len(matcar[i]):        
-        print(matcar[i][j])
-        j = j + 1
+    vl = 0
+    while j < len(matcar[i]):
+        vl = vl + matcar[i][j] ** 2
+        j = j +1
+        if(j == len(matcar[i])):
+            arrcmaux.append(vl)
     i = i + 1
 
-exit(0)
+#Variância expecífica
+arrcmauxexp = []
+for item in arrcmaux:
+    arrcmauxexp.append(1 - item)
+
+#Coeficiente dos escores fatoriais
+matcart = np.transpose(matcar)
+matcartne = np.matmul(matcart, matcar) ** -1
+coefef = np.matmul(matcartne, matcart)
+
+#Escores fatoriais
+z = np.array(df)
+medias = []
+dp = np.std(np.array(df), axis=0)
+idx = 0
+while idx < len(np.array(df)[0]):
+    medias.append(0)
+    idxy = 0
+    for item in np.array(df):
+        medias[idx] = medias[idx] + item[idx]
+        idxy = idxy + 1
+    medias[idx] = medias[idx] / idxy
+    idx = idx + 1
+
+idx2 = 0
+while idx2 < len(z[0]):
+    for item in z:
+        item[idx2] = (item[idx2] - medias[idx2]) / dp[idx2]
+    idx2 = idx2 + 1
+
+zt = np.transpose(z)
+czt = np.transpose(np.matmul(coefef, zt))
 
 #Iniciando console
 print('\n')
@@ -90,4 +125,41 @@ print(autovalsortr)
 print('\n')
 print('Matriz estimada de carregamentos')
 print(matcar)
+print('\n')
+
+#7: Comunalidades e variâncias
+print('7: Comunalidades e variâncias')
+i7 = 0
+for item in arrcmaux:
+    i7 = i7 + 1
+    print('h' + str(i7) + ' ' + str(item))
+print('\n')
+
+#8: Variância expecífica
+print('8: Variância expecífica')
+for item in arrcmauxexp:
+    print(item)
+print('\n')
+
+#9: Coeficiente dos escores fatoriais
+print('9: Coeficiente dos escores fatoriais')
+print(coefef)
+print('\n')
+
+#10: Escores fatoriais
+print('10: Escores fatoriais')
+print('Médias')
+print(medias)
+print('\n')
+print('Desvio padrão')
+print(dp)
+print('\n')
+print('Z')
+print(z)
+print('\n')
+print('Z Transposto')
+print(zt)
+print('\n')
+print('(Z Transposto * coefef) transposto')
+print(czt)
 print('\n')
